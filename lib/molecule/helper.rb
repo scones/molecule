@@ -17,7 +17,7 @@ module Molecule
       end
     end
 
-    include Molecule::Renderers::Base
+    include ::Molecule::Renderers::Base
 
   end
 

@@ -9,10 +9,8 @@ module Molecule
       @molecules = []
     end
 
-    def push name
-      check_molecule_dependencies if Molecule.config[:verify_children]
-
-      @molecules.push(name)
+    def push molecule
+      @molecules.push(molecule)
     end
 
     def current_molecule
@@ -21,6 +19,10 @@ module Molecule
 
     def pop
       @molecules.pop
+    end
+
+    def empty?
+      @molecules.empty?
     end
 
   end

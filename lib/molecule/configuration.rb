@@ -1,24 +1,18 @@
 
 module Molecule
   class Configuration
-    attr_accessor :is_gathering
-    attr_accessor :is_rendering
+    attr_accessor :verify_children
 
     def initialize
       reset_defaults!
     end
 
     def reset_defaults!
-      @is_gathering = false
-      @is_rendering = true
+      @verify_children = false
     end
 
-    def is_gathering?
-      !!@is_gathering
-    end
-
-    def is_rendering?
-      !!@is_rendering
+    def verify_children?
+      !!@verify_children
     end
 
   end

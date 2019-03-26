@@ -1,3 +1,5 @@
+require 'molecule/molecule'
+require 'molecule/stack'
 
 module Molecule
 
@@ -5,9 +7,14 @@ module Molecule
 
     # narrow template lookup path to the provided molecule
     def render context, options, &block
+      @@stack ||= ::Molecule::Stack.new
       with_member_override(:view_paths, molecule_view_paths(options)) do
         with_member_override(:prefixes, [molecule_prefix(options)]) do
-          result = super(context, options, block).body
+          with_dependency_check(options[:molecule]) do
+            with_new_molecule(options[:molecule]) do
+              result = super(context, options, block).body
+            end
+          end
         end
       end
     end
@@ -16,9 +23,25 @@ module Molecule
     def with_member_override member, override, &block
       old_value = @lookup_context.public_send(member)
       molecule_force_set_member(@lookup_context, member, override)
-      result = yield
+      yield
+    ensure
       molecule_force_set_member(@lookup_context, member, old_value)
-      result
+    end
+
+    def with_dependency_check name, &block
+      if !@@stack.empty? && ::Molecule.config.verify_children?
+        unless @@stack.current_molecule.has_child?(name.to_s)
+          raise "requested molecule (#{name}) is not configured as a child of current molecule (#{@@stack.current_molecule.name})"
+        end
+      end
+      yield
+    end
+
+    def with_new_molecule name
+      @@stack.push(::Molecule::Molecule.read(name))
+      yield
+    ensure
+      @@stack.pop
     end
 
     def molecule_force_set_member object, member, value

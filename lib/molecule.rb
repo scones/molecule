@@ -3,7 +3,7 @@ require "molecule/railtie"
 module Molecule
 
   class << self
-    attr_accessor :stack
+    attr_accessor :registry
   end
 
   def self.config

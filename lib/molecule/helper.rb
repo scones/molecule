@@ -3,34 +3,47 @@ module Molecule
   module Helper
 
     def molecule_inline_style molecule_name
-      content_tag(:style, dump_asset(molecule_name, 'inline', 'styles')).html_safe
+      content_tag(:style, molecule_asset_contents(molecule_name, 'inline', 'styles')).html_safe
     end
 
     def molecule_inline_script molecule_name
-      content_tag(:script, dump_asset(molecule_name, 'inline', 'scripts')).html_safe
+      content_tag(:script, molecule_asset_contents(molecule_name, 'inline', 'scripts')).html_safe
     end
 
     def molecule_defer_style molecule_name
-      content_tag(:noscript, molecule_inline_style(molecule_name), {class: 'defered-style'}).html_safe
+      relative_link = molecule_relative_path(molecule_name, 'defer', 'styles')
+      content_tag(:noscript, class: 'defered-style') do
+        content_tag(:link, '', {rel: :stylesheet, type: 'text/css', href: relative_link}).html_safe
+      end.html_safe
     end
 
     def molecule_defer_script molecule_name
-      content_tag(:script, '', {defer: :defer, src: asset_path(molecule_name, 'defer', 'scripts')}).html_safe
+      relative_link = molecule_relative_path(molecule_name, 'defer', 'scripts')
+      content_tag(:script, '', {defer: :defer, src: relative_link}).html_safe
+    end
+
+    def molecule_asset_contents molecule_name, asset_group, asset_type
+      ::File.read(abolute_asset_path(molecule_name, asset_group, asset_type)).html_safe
+    end
+
+    def molecule_relative_path molecule_name, asset_group, asset_type
+      config = load_manifest(molecule_name, asset_group, asset_type)
+      suffix = suffix_for_type(asset_type)
+      asset_slug = "#{molecule_name}-#{asset_group}.#{suffix}"
+      asset = config[asset_slug]
+      "/assets/#{suffix}/#{asset}"
     end
 
 
     private
 
 
-    def dump_asset molecule_name, asset_group, asset_type
-      ::File.read(asset_path(molecule_name, asset_group, asset_type)).html_safe
-    end
-
-    def asset_path molecule_name, asset_group, asset_type
+    def abolute_asset_path molecule_name, asset_group, asset_type
       config = load_manifest(molecule_name, asset_group, asset_type)
       suffix = suffix_for_type(asset_type)
-      asset_slug = "#{molecule_name}-inline.#{suffix}"
-      Rails.root.join('public', 'assets', suffix, config[asset_slug])
+      asset_slug = "#{molecule_name}-#{asset_group}.#{suffix}"
+      asset = config[asset_slug]
+      Rails.root.join('public', 'assets', suffix, asset)
     end
 
     def suffix_for_type asset_type
@@ -50,7 +63,7 @@ module Molecule
     end
 
     def manifest_path molecule_name, asset_group, asset_type
-      Rails.root.join('public', 'manifests', "#{molecule_name}-#{asset_group}-#{asset_type}.json")
+      Rails.root.join('public', 'manifests', "#{molecule_name}/#{asset_group}-#{asset_type}.json")
     end
   end
 

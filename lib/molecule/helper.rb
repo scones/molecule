@@ -27,22 +27,32 @@ module Molecule
     end
 
     def molecule_relative_path molecule_name, asset_group, asset_type
-      config = load_manifest(molecule_name, asset_group, asset_type)
-      suffix = suffix_for_type(asset_type)
-      asset_slug = "#{molecule_name}-#{asset_group}.#{suffix}"
-      asset = config[asset_slug]
+      suffix, asset = find_asset(molecule_name, asset_group, asset_type)
       "/assets/#{suffix}/#{asset}"
+    end
+
+    def molecule_inline_sprite molecule_name
+      manifest_path = Rails.root.join('public', 'manifests', "#{molecule_name}/icons.json")
+      manifest = ::File.read(manifest_path)
+      json = JSON.parse(manifest);
+      asset_path = Rails.root.join('public', 'assets', 'svg', json["#{molecule_name}.svg"])
+      ::File.read(asset_path).html_safe
     end
 
 
     private
 
 
-    def abolute_asset_path molecule_name, asset_group, asset_type
+    def find_asset molecule_name, asset_group, asset_type
       config = load_manifest(molecule_name, asset_group, asset_type)
       suffix = suffix_for_type(asset_type)
       asset_slug = "#{molecule_name}-#{asset_group}.#{suffix}"
       asset = config[asset_slug]
+      return suffix, asset
+    end
+
+    def abolute_asset_path molecule_name, asset_group, asset_type
+      suffix, asset = find_asset(molecule_name, asset_group, asset_type)
       Rails.root.join('public', 'assets', suffix, asset)
     end
 

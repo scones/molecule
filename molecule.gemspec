@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.name        = "molecule"
   spec.version     = Molecule::VERSION
   spec.authors     = ["Dirk Gustke"]
-  spec.email       = ["dirk.gustke@verticalmedia.com"]
+  spec.email       = ["code+molecule@asm68k.org"]
   spec.homepage    = "https://github.com/scones/molecule"
   spec.summary     = "provide and use template and assets in a self-contained way"
   spec.description = "provide and use template and assets in a self-contained way"
@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{bin,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
 
-  spec.add_dependency "rails", "~> 6.0.0.beta1"
+  spec.add_dependency "rails", ">= 6"
 
 end
 

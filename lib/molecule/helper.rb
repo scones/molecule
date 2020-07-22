@@ -8,6 +8,9 @@ module Molecule
 
     def molecule_inline_script molecule_name
       content_tag(:script, molecule_asset_contents(molecule_name, 'inline', 'scripts')).html_safe
+    rescue
+      Rails.logger.warn "no inline script for '#{molecule_name}'"
+      ''
     end
 
     def molecule_defer_style molecule_name
@@ -22,6 +25,14 @@ module Molecule
       content_tag(:script, '', {defer: :defer, src: relative_link}).html_safe
     end
 
+    def molecule_inject_script_name molecule_name
+      relative_link = molecule_relative_path(molecule_name, 'defer', 'scripts')
+      content_tag(:script, "window.script_name='#{relative_link}';".html_safe).html_safe
+    rescue
+      Rails.logger.warn "no inline script name for '#{molecule_name}'"
+      ''
+    end
+
     def molecule_asset_contents molecule_name, asset_group, asset_type
       ::File.read(abolute_asset_path(molecule_name, asset_group, asset_type)).html_safe
     end
@@ -33,6 +44,12 @@ module Molecule
 
     def molecule_inline_sprite molecule_name
       manifest_path = Rails.root.join('public', 'manifests', "#{molecule_name}/icons.json")
+
+      unless ::File.exists?(manifest_path)
+        Rails.logger.warn("asset manifest not found: '#{manifest_path}'")
+        return ''
+      end
+
       manifest = ::File.read(manifest_path)
       json = JSON.parse(manifest);
       asset_path = Rails.root.join('public', 'assets', 'svg', json["#{molecule_name}.svg"])

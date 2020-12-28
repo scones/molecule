@@ -6,13 +6,13 @@ module Molecule
   class Renderer < ::ActionView::PartialRenderer
 
     # narrow template lookup path to the provided molecule
-    def render context, options, &block
+    def render context, &block
       @@stack ||= ::Molecule::Stack.new
-      with_member_override(:view_paths, molecule_view_paths(options)) do
-        with_member_override(:prefixes, [molecule_prefix(options)]) do
-          with_dependency_check(options[:molecule]) do
-            with_new_molecule(options[:molecule]) do
-              result = super(context, options, block).body
+      with_member_override(:view_paths, molecule_view_paths) do
+        with_member_override(:prefixes, [molecule_prefix]) do
+          with_dependency_check(@options[:molecule]) do
+            with_new_molecule(@options[:molecule]) do
+              result = super(@options[:molecule], context, block).body
             end
           end
         end
@@ -58,18 +58,18 @@ module Molecule
       @lookup_context.find_template(path, prefixes, false, locals, @details)
     end
 
-    def molecule_view_paths options
-      ::ActionView::PathSet.new([molecule_template_path(options)])
+    def molecule_view_paths
+      ::ActionView::PathSet.new([molecule_template_path])
     end
 
     # molecules path
-    def molecule_template_path options
+    def molecule_template_path
       Rails.root.join('app', 'molecules')
     end
 
     # path for current molecule
-    def molecule_prefix options
-      "#{options[:molecule].to_s}/views"
+    def molecule_prefix
+      "#{@options[:molecule].to_s}/views"
     end
 
     # default template entrypoint
@@ -80,3 +80,4 @@ module Molecule
   end
 
 end
+

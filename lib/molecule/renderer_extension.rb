@@ -6,7 +6,7 @@ module Molecule
 
     def render(context, options)
       if options.key?(:molecule)
-        ::Molecule::Renderer.new(@lookup_context).render(context, options)
+        ::Molecule::Renderer.new(@lookup_context, options).render(context)
       else
         super
       end

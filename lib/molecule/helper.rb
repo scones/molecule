@@ -3,30 +3,30 @@ module Molecule
   module Helper
 
     def molecule_inline_style molecule_name
-      content_tag(:style, molecule_asset_contents(molecule_name, 'inline', 'styles')).html_safe
+      content_tag(:style, molecule_asset_contents(molecule_name, 'styles', 'inline')).html_safe
     end
 
     def molecule_inline_script molecule_name
-      content_tag(:script, molecule_asset_contents(molecule_name, 'inline', 'scripts')).html_safe
+      content_tag(:script, molecule_asset_contents(molecule_name, 'scripts', 'inline')).html_safe
     rescue
       Rails.logger.warn "no inline script for '#{molecule_name}'"
       ''
     end
 
     def molecule_defer_style molecule_name
-      relative_link = molecule_relative_path(molecule_name, 'defer', 'styles')
+      relative_link = molecule_relative_path(molecule_name, 'styles', 'defer')
       content_tag(:noscript, class: 'defered-style') do
         content_tag(:link, '', {rel: :stylesheet, type: 'text/css', href: relative_link}).html_safe
       end.html_safe
     end
 
     def molecule_defer_script molecule_name
-      relative_link = molecule_relative_path(molecule_name, 'defer', 'scripts')
+      relative_link = molecule_relative_path(molecule_name, 'scripts', 'defer')
       content_tag(:script, '', {defer: :defer, src: relative_link}).html_safe
     end
 
     def molecule_inject_script_name molecule_name
-      relative_link = molecule_relative_path(molecule_name, 'defer', 'scripts')
+      relative_link = molecule_relative_path(molecule_name, 'scripts', 'defer')
       content_tag(:script, "window.script_name='#{relative_link}';".html_safe).html_safe
     rescue
       Rails.logger.warn "no inline script name for '#{molecule_name}'"

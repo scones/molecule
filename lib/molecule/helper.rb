@@ -63,7 +63,7 @@ module Molecule
     def find_asset molecule_name, asset_group, asset_type
       config = load_manifest(molecule_name, asset_group, asset_type)
       suffix = suffix_for_type(asset_type)
-      asset_slug = "#{molecule_name}-#{asset_group}.#{suffix}"
+      asset_slug = "#{molecule_name}-#{asset_type}-#{asset_group}.#{suffix}"
       asset = config[asset_slug]
       return suffix, asset
     end

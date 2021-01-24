@@ -2,30 +2,30 @@ module Molecule
 
   module Helper
 
-    def molecule_inline_style molecule_name
+    def molecule_inline_style molecule_name = default_molecule_name
       content_tag(:style, molecule_asset_contents(molecule_name, 'inline', 'styles')).html_safe
     end
 
-    def molecule_inline_script molecule_name
+    def molecule_inline_script molecule_name = default_molecule_name
       content_tag(:script, molecule_asset_contents(molecule_name, 'inline', 'scripts')).html_safe
     rescue
       Rails.logger.warn "no inline script for '#{molecule_name}'"
       ''
     end
 
-    def molecule_defer_style molecule_name
+    def molecule_defer_style molecule_name = default_molecule_name
       relative_link = molecule_relative_path(molecule_name, 'defer', 'styles')
       content_tag(:noscript, class: 'defered-style') do
         content_tag(:link, '', {rel: :stylesheet, type: 'text/css', href: relative_link}).html_safe
       end.html_safe
     end
 
-    def molecule_defer_script molecule_name
+    def molecule_defer_script molecule_name = default_molecule_name
       relative_link = molecule_relative_path(molecule_name, 'defer', 'scripts')
       content_tag(:script, '', {defer: :defer, src: relative_link}).html_safe
     end
 
-    def molecule_inject_script_name molecule_name
+    def molecule_inject_script_name molecule_name = default_molecule_name
       relative_link = molecule_relative_path(molecule_name, 'defer', 'scripts')
       content_tag(:script, "window.script_name='#{relative_link}';".html_safe).html_safe
     rescue
@@ -59,6 +59,10 @@ module Molecule
 
     private
 
+
+    def default_molecule_name
+      "#{controller_name}_#{action_name}"
+    end
 
     def find_asset molecule_name, asset_group, asset_type
       config = load_manifest(molecule_name, asset_group, asset_type)

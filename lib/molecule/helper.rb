@@ -56,13 +56,13 @@ module Molecule
       ::File.read(asset_path).html_safe
     end
 
-
-    private
-
-
     def default_molecule_name
       "#{controller_name}_#{action_name}"
     end
+
+
+    private
+
 
     def find_asset molecule_name, asset_group, asset_type
       config = load_manifest(molecule_name, asset_group, asset_type)

@@ -42,7 +42,7 @@ module Molecule
       "/assets/#{suffix}/#{asset}"
     end
 
-    def molecule_inline_sprite molecule_name
+    def molecule_inline_sprite molecule_name = default_molecule_name
       manifest_path = Rails.root.join('public', 'manifests', "#{molecule_name}/icons.json")
 
       unless ::File.exists?(manifest_path)

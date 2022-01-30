@@ -43,7 +43,7 @@ module Molecule
     end
 
     def molecule_inline_sprite molecule_name = default_molecule_name
-      manifest_path = Rails.root.join('public', 'manifests', "#{molecule_name}/icons.json")
+      manifest_path = Rails.root.join('public', 'manifests', "#{molecule_name}/icons-inline.json")
 
       unless ::File.exists?(manifest_path)
         Rails.logger.warn("asset manifest not found: '#{manifest_path}'")

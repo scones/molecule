@@ -57,7 +57,8 @@ module Molecule
     end
 
     def default_molecule_name
-      "#{controller_name}_#{action_name}"
+      full_controller_name = controller.class.name.gsub(':', '').delete_suffix('Controller').underscore
+      "#{full_controller_name}_#{action_name}"
     end
 
 
